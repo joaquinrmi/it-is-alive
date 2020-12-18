@@ -84,8 +84,9 @@ class AliveCode
 		if(this.currentLine == this.lines.length)
 		{
 			this.toRedraw = false;
+			return;
 		}
-		else if(this.currentToken >= this.lines[this.currentLine].length)
+		else if(this.currentToken > this.lines[this.currentLine].length)
 		{
 			this.finishedLine = true;
 		}
@@ -157,6 +158,12 @@ class AliveCode
 			lineX += this.ctx.measureText(token.value).width;
 		}
 
+		if(this.currentToken == this.lines[lineId].length)
+		{
+			this.currentToken += 1;
+			return;
+		}
+
 		const token = this.lines[lineId][this.currentToken];
 		if(this.currentChar + 1 >= token.value.length)
 		{
@@ -172,6 +179,9 @@ class AliveCode
 			this.ctx.fillStyle = this.fontColor[token.colorId];
 			this.ctx.fillText(token.value, this.getLeftPadding(0) + lineX, lineY);
 
+			lineX += this.ctx.measureText(token.value).width;
+			this.drawCursor(this.getLeftPadding(0) + lineX, lineY);
+
 			this.currentToken += 1;
 			this.currentChar = 0;
 			return;
@@ -180,7 +190,21 @@ class AliveCode
 		this.ctx.font = this.fontNormal;
 		this.ctx.fillStyle = this.fontColor[token.preColorId];
 		this.ctx.fillText(token.value.substr(0, this.currentChar + 1), this.getLeftPadding(0) + lineX, lineY);
+
+		lineX += this.ctx.measureText(token.value.substr(0, this.currentChar + 1)).width;
+		this.drawCursor(this.getLeftPadding(0) + lineX, lineY);
+
 		this.currentChar += 1;
+	}
+
+	drawCursor(posX, posY)
+	{
+		this.ctx.strokeStyle = "rgb(250, 250, 250)";
+		this.ctx.lineWidth = 2;
+		this.ctx.beginPath();
+		this.ctx.moveTo(posX, posY + 4);
+		this.ctx.lineTo(posX, posY + 4 - this.fontSize);
+		this.ctx.stroke();
 	}
 
 	getLinePosition(line)
