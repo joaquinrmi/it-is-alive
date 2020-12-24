@@ -29,9 +29,23 @@
 <body>
    <div id="app"></div>
 
-   <script src="alive_code.js"></script>
+   <script src="src/alive_code.js"></script>
    <script type="text/javascript">
       const aliveCode = new AliveCode(document.getElementById("app"));
+      aliveCode.setFontFamily("'Inconsolata'");
+      aliveCode.lines = [
+         [
+            new TextToken("var", 4, 1, true),
+            new TextToken(" message", 1, 1),
+            new TextToken(" =", 2, 2),
+            new TextToken(" \"Hello World!\"", 3, 3),
+            new TextToken(";", 1, 1)
+         ],
+         [
+            new TextToken("// Good bye World!", 0, true)
+         ]
+      ];
+
       aliveCode.start();
    </script>
 </body>

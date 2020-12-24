@@ -4,8 +4,13 @@ class AliveCode
 	{
 		this.width = window.innerWidth;
 		this.height = window.innerHeight;
-		this.fontNormal = "16px 'Inconsolata'";
-		this.fontItalic = "italic 16px 'Inconsolata'";
+
+		this.fontFamily = "Lucida Console";
+		this.fontSize = 16;
+		this.font = {
+			normal: this.getFontSize() + " " + this.fontFamily,
+			italic: "italic " + this.getFontSize() + " " + this.fontFamily
+		};
 
 		this.canvas = document.createElement("canvas");
 		this.canvas.width = this.width;
@@ -13,31 +18,19 @@ class AliveCode
 		container.appendChild(this.canvas);
 
 		this.ctx = this.canvas.getContext("2d");
-		this.ctx.font = "16px 'Inconsolata'";
+		this.ctx.font = this.font.normal;
 
-		this.bgColor = "rgb(25,37,60)";
-		this.fontSize = 16;
+		this.backgroundColor = "rgb(25,37,60)";
 		this.lineSpace = 4;
-		this.fontColor = [
+		this.colorPalette = [
 			"rgb(64,76,100)",
 			"rgb(200,200,200)",
 			"rgb(236,116,84)",
-			"rgb(34,154,138)", // string
+			"rgb(34,154,138)",
 			"rgb(175,110,175)",
 		];
 
-		this.lines = [
-			[
-				new TextToken("var", 4, 1, true),
-				new TextToken(" message", 1, 1),
-				new TextToken(" =", 2, 2),
-				new TextToken(" \"Hello World!\"", 3, 3),
-				new TextToken(";", 1, 1)
-			],
-			[
-				new TextToken("// Good bye World!", 0, true)
-			]
-		];
+		this.lines = [];
 
 		this.lastTime = 0;
 		this.elapsedTime = 0;
@@ -48,19 +41,50 @@ class AliveCode
 		this.currentChar = 0;
 		this.finishedLine = false;
 		this.toRedraw = true;
+
+		this.onTokenEnd = function() {};
+		this.onLineEnd = function() {};
+	}
+
+	getFontSize()
+	{
+		return this.fontSize.toString() + "px";
+	}
+
+	setFontFamily(font)
+	{
+		this.fontFamily = font;
+		this.font = {
+			normal: this.getFontSize() + " " + this.fontFamily,
+			italic: "italic " + this.getFontSize() + " " + this.fontFamily
+		};
+	}
+
+	setFontSize(size)
+	{
+		this.fontSize = size;
+		this.font = {
+			normal: this.getFontSize() + " " + this.fontFamily,
+			italic: "italic " + this.getFontSize() + " " + this.fontFamily
+		};
+	}
+
+	setVelocity(velocity)
+	{
+		this.timeToKey = 1000 / velocity;
 	}
 
 	start()
 	{
-		this.draw();
+		this.initDraw();
 
 		this.lastTime = performance.now();
 		window.requestAnimationFrame(this.loop.bind(this));
 	}
 
-	draw()
+	initDraw()
 	{
-		this.ctx.fillStyle = this.bgColor;
+		this.ctx.fillStyle = this.backgroundColor;
 		this.ctx.fillRect(0, 0, this.width, this.height);
 	}
 
@@ -94,6 +118,8 @@ class AliveCode
 		if(this.finishedLine)
 		{
 			this.currentLine += 1;
+			this.onLineEnd();
+
 			this.currentToken = 0;
 			this.currentChar = 0;
 			this.finishedLine = false;
@@ -127,7 +153,7 @@ class AliveCode
 	{
 		const lineY = this.getLinePosition(lineId + 1) - this.fontSize;
 
-		this.ctx.fillStyle = this.bgColor;
+		this.ctx.fillStyle = this.backgroundColor;
 		this.ctx.fillRect(0, lineY, this.width, lineY + this.fontSize);
 	}
 
@@ -135,8 +161,8 @@ class AliveCode
 	{
 		const lineY = this.getLinePosition(lineId + 1);
 
-		this.ctx.font = this.fontNormal;
-		this.ctx.fillStyle = this.fontColor[0];
+		this.ctx.font = this.font.normal;
+		this.ctx.fillStyle = this.colorPalette[0];
 		this.ctx.fillText((lineId + 1).toString(), this.getLeftPadding(0) / 2, lineY);
 
 		let lineX = 0;
@@ -146,14 +172,14 @@ class AliveCode
 
 			if(token.italic)
 			{
-				this.ctx.font = this.fontItalic;
+				this.ctx.font = this.font.italic;
 			}
 			else
 			{
-				this.ctx.font = this.fontNormal;
+				this.ctx.font = this.font.normal;
 			}
 
-			this.ctx.fillStyle = this.fontColor[token.colorId];
+			this.ctx.fillStyle = this.colorPalette[token.colorId];
 			this.ctx.fillText(token.value, this.getLeftPadding(0) + lineX, lineY);
 			lineX += this.ctx.measureText(token.value).width;
 		}
@@ -161,6 +187,7 @@ class AliveCode
 		if(this.currentToken == this.lines[lineId].length)
 		{
 			this.currentToken += 1;
+			this.onTokenEnd();
 			return;
 		}
 
@@ -169,26 +196,28 @@ class AliveCode
 		{
 			if(token.italic)
 			{
-				this.ctx.font = this.fontItalic;
+				this.ctx.font = this.font.italic;
 			}
 			else
 			{
-				this.ctx.font = this.fontNormal;
+				this.ctx.font = this.font.normal;
 			}
 
-			this.ctx.fillStyle = this.fontColor[token.colorId];
+			this.ctx.fillStyle = this.colorPalette[token.colorId];
 			this.ctx.fillText(token.value, this.getLeftPadding(0) + lineX, lineY);
 
 			lineX += this.ctx.measureText(token.value).width;
 			this.drawCursor(this.getLeftPadding(0) + lineX, lineY);
 
 			this.currentToken += 1;
+			this.onTokenEnd();
+
 			this.currentChar = 0;
 			return;
 		}
 
-		this.ctx.font = this.fontNormal;
-		this.ctx.fillStyle = this.fontColor[token.preColorId];
+		this.ctx.font = this.font.normal;
+		this.ctx.fillStyle = this.colorPalette[token.preColorId];
 		this.ctx.fillText(token.value.substr(0, this.currentChar + 1), this.getLeftPadding(0) + lineX, lineY);
 
 		lineX += this.ctx.measureText(token.value.substr(0, this.currentChar + 1)).width;
