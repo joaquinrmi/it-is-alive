@@ -15,20 +15,18 @@ class AliveCode
 		this.canvas = document.createElement("canvas");
 		this.canvas.width = this.width;
 		this.canvas.height = this.height;
-		container.appendChild(this.canvas);
+
+		if(container)
+		{
+			container.appendChild(this.canvas);
+		}
 
 		this.ctx = this.canvas.getContext("2d");
 		this.ctx.font = this.font.normal;
 
 		this.backgroundColor = "rgb(25,37,60)";
 		this.lineSpace = 4;
-		this.colorPalette = [
-			"rgb(64,76,100)",
-			"rgb(200,200,200)",
-			"rgb(236,116,84)",
-			"rgb(34,154,138)",
-			"rgb(175,110,175)",
-		];
+		this.colorPalette = [];
 
 		this.lines = [];
 
@@ -49,6 +47,11 @@ class AliveCode
 	getFontSize()
 	{
 		return this.fontSize.toString() + "px";
+	}
+
+	setContainer(container)
+	{
+		container.appendChild(this.canvas);
 	}
 
 	setFontFamily(font)
