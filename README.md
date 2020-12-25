@@ -15,6 +15,8 @@ Para crear una animación habrá que instanciar un objeto de la clase `AliveCode
 const aliveCode = new AliveCode(document.getElementById("app"));
 ```
 
+La animación comenzará llamando a la función `AliveCode.start()`.
+
 ### Configuración de la fuente
 
 La fuente a utilizar puede ser modificada mendiante dos funciones: `AliveCode.setFontFamily()` y `AliveCode.setFontSize()`, las cuales sirven para establecer la fuente y el tamaño de ésta, respectivamente.
@@ -31,22 +33,22 @@ Para establecer el código a dibujar por el objeto `AliveCode`, habrá que modif
 const aliveCode = new AliveCode(document.getElementById("app"));
 
 aliveCode.colorPalette = [
-	"rgb(150,150,150)",
-	"rgb(220,220,220)"
+   "rgb(150,150,150)",
+   "rgb(220,220,220)"
 ];
 
 /*
-	Las variables mainColorId y preColorId son las posiciones de los
-	colores a utilizar dentro del arreglo de colores AliveCod.colorPalette.
+   Las variables mainColorId y preColorId son las posiciones de los
+   colores a utilizar dentro del arreglo de colores AliveCod.colorPalette.
 */
 const mainColorId = 1;
 const preColorId = 0;
 
 aliveCode.lines = [
-	// este es el arreglo de líneas
-	[
-		// esta es una línea, un arreglo de tokens
-		new TextToken("Hola Mundo!", mainColorId, preColorId)
-	]
+   // este es el arreglo de líneas
+   [
+      // esta es una línea, un arreglo de tokens
+      new TextToken("Hola Mundo!", mainColorId, preColorId)
+   ]
 ];
 ```
