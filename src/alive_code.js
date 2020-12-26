@@ -166,7 +166,11 @@ class AliveCode
 
 		this.ctx.font = this.font.normal;
 		this.ctx.fillStyle = this.colorPalette[0];
-		this.ctx.fillText((lineId + 1).toString(), this.getLeftPadding(0) / 2, lineY);
+
+		const lineIdStr = (lineId + 1).toString();
+		const padding = this.getLeftPadding(0) / 2 - this.ctx.measureText(lineIdStr.substr(1)).width;
+
+		this.ctx.fillText(lineIdStr, padding, lineY);
 
 		let lineX = 0;
 		for(let i = 0; i < this.currentToken; ++i)
