@@ -54,6 +54,16 @@ class AliveCode
 		container.appendChild(this.canvas);
 	}
 
+	setSize(width, height)
+	{
+		this.width = width;
+		this.height = height;
+		this.canvas.width = width;
+		this.canvas.height = height;
+		
+		this.initDraw();
+	}
+
 	setFontFamily(font)
 	{
 		this.fontFamily = font;
