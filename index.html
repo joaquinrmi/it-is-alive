@@ -34,16 +34,16 @@
       const aliveCode = new AliveCode(document.getElementById("app"));
       aliveCode.setFontFamily("'Inconsolata'");
       aliveCode.lines = [
-         [
+         new CodeLine(0, [
             new TextToken("var", 4, 1, true),
             new TextToken(" message", 1, 1),
             new TextToken(" =", 2, 2),
             new TextToken(" \"Hello World!\"", 3, 3),
             new TextToken(";", 1, 1)
-         ],
-         [
-            new TextToken("// Good bye World!", 0, true)
-         ]
+         ]),
+         new CodeLine(1, [
+             new TextToken("// Good bye World!", 0, true)
+         ])
       ];
       aliveCode.colorPalette = [
          "rgb(64,76,100)",
